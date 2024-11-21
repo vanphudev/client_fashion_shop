@@ -1,0 +1,19 @@
+{
+   "extends": ["next/core-web-vitals", "plugin:react/recommended", "plugin:import/errors", "plugin:import/warnings"],
+   "plugins": ["react", "jsx-a11y", "import"],
+   "settings": {
+      "import/resolver": {
+         "alias": {
+            "map": [
+               ["@", "./src"],
+               ["@assets", "./public/assets"]
+            ],
+            "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
+         }
+      }
+   },
+   "rules": {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off"
+   }
+}

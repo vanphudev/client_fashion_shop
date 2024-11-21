@@ -1,0 +1,16 @@
+node_modules
+.env
+public
+*.lock
+.vscode
+dist
+/bin
+next.config.js
+pnpm-lock.yaml
+svg
+src/svg
+src/lib
+src/ui
+src/utils
+src/data
+.next
