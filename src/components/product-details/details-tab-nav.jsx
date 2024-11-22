@@ -1,16 +1,17 @@
 import React, {useRef, useEffect, useState} from "react";
 import ReviewForm from "../forms/review-form";
 import ReviewItem from "./review-item";
+import Cookies from "js-cookie";
 
 const DetailsTabNav = ({product}) => {
    const activeRef = useRef(null);
    const marker = useRef(null);
+   const isAuthenticate = Cookies.get("userInfo");
+   const {renderCompnent, setRenderCompnent} = useState(0);
 
-   const {renderCompnent, setRenderCompnent} = useState(0)
-
-   const handleRenderCompnent = () =>{
+   const handleRenderCompnent = () => {
       setRenderCompnent(!renderCompnent);
-   }
+   };
 
    // handleActive
    const handleActive = (e) => {
@@ -124,15 +125,22 @@ const DetailsTabNav = ({product}) => {
                                     <h3 className='tp-product-details-review-title'>There are no reviews yet.</h3>
                                  )}
                                  {product?.danh_gia_san_pham?.length > 0 &&
-                                    product?.danh_gia_san_pham?.map((item) => <ReviewItem key={item._id} ratings={item} />)}
+                                    product?.danh_gia_san_pham?.map((item) => (
+                                       <ReviewItem key={item.ma_danh_gia} ratings={item} />
+                                    ))}
                               </div>
                            </div>
                         </div>
                         <div className='col-lg-6'>
-                           <div className='tp-product-details-review-form'>
-                              <h3 className='tp-product-details-review-form-title mb-3'>Đánh giá sản phẩm</h3>
-                              <ReviewForm product_id={product?.ma_san_pham} handleRenderCompnent={handleRenderCompnent}/>
-                           </div>
+                           {isAuthenticate ? (
+                              <div className='tp-product-details-review-form'>
+                                 <h3 className='tp-product-details-review-form-title mb-3'>Đánh giá sản phẩm</h3>
+                                 <ReviewForm
+                                    product_id={product?.ma_san_pham}
+                                    handleRenderCompnent={handleRenderCompnent}
+                                 />
+                              </div>
+                           ) : null}
                         </div>
                      </div>
                   </div>

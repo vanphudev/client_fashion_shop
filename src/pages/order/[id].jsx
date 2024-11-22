@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {useEffect, useState, useRef} from "react";
 import Image from "next/image";
 import dayjs from "dayjs";
 import ReactToPrint from "react-to-print";
@@ -8,32 +8,16 @@ import Header from "@/layout/headers/header";
 import Footer from "@/layout/footers/footer";
 import logo from "@assets/img/logo/logo.svg";
 import ErrorMsg from "@/components/common/error-msg";
-import { useGetUserOrderByIdQuery } from "@/redux/features/order/orderApi";
+import {useGetUserOrderByIdQuery} from "@/redux/features/order/orderApi";
 import PrdDetailsLoader from "@/components/loader/prd-details-loader";
 import formatCurrency from "@/lib/funcMoney";
 
-const fetchProvinces = async () => {
-   const response = await fetch('https://vapi.vnappmob.com/api/province/');
-   return response.json();
-};
-
-const fetchDistricts = async (provinceId) => {
-   const response = await fetch(`https://vapi.vnappmob.com/api/province/district/${provinceId}`);
-   return response.json();
-};
-
-const fetchWards = async (districtId) => {
-   const response = await fetch(`https://vapi.vnappmob.com/api/province/ward/${districtId}`);
-   return response.json();
-};
-
-const SingleOrder = ({ params }) => {
+const SingleOrder = ({params}) => {
    const printRef = useRef();
-   const { data: order, isError, isLoading } = useGetUserOrderByIdQuery(params.id);
-   const [province, setProvince] = useState("");
-   const [district, setDistrict] = useState("");
-   const [ward, setWard] = useState("");
+   const {data: order, isError, isLoading} = useGetUserOrderByIdQuery(params.id);
+
    let content = null;
+
    if (isLoading) {
       content = <PrdDetailsLoader loading={isLoading} />;
    }
@@ -41,25 +25,9 @@ const SingleOrder = ({ params }) => {
       content = <ErrorMsg msg='There was an error' />;
    }
 
-   useEffect(() => {
-      if (order && order.data) {
-         const { ward, district, province } = order.data.orders.shippingAddress;
-         fetchProvinces().then(provinces => {
-            const foundProvince = provinces.results.find(p => p.province_id === province);
-            setProvince(foundProvince ? foundProvince.province_name : "Unknown Province");
-         });
-         fetchDistricts(province).then(districts => {
-            const foundDistrict = districts.results.find(d => d.district_id === district);
-            setDistrict(foundDistrict ? foundDistrict.district_name : "Unknown District");
-         });
-         fetchWards(district).then(wards => {
-            const foundWard = wards.results.find(d => d.ward_id === ward);
-            setWard(foundWard ? foundWard.ward_name : "Unknown Ward");
-         });
-      }
-   }, [order]);
    if (!isLoading && !isError) {
-      const order_new = order?.data?.orders;
+      const order_new = order?.metadata?.hoa_don[0];
+      console.log("order_new", order_new);
       content = (
          <>
             <section className='invoice__area pt-120 pb-120'>
@@ -69,14 +37,16 @@ const SingleOrder = ({ params }) => {
                         <div className='col-xl-12'>
                            <div className='invoice_msg mb-40'>
                               <p className='text-black alert alert-success'>
-                                 Cảm ơn bạn <strong>{order_new?.userId?.fullName}</strong> Đơn hàng của bạn đã được chúng tôi ghi nhận !
+                                 Cảm ơn bạn{" "}
+                                 <strong>{order_new?.ma_khach_hang_belongto_khach_hang?.ten_khach_hang}</strong> Đơn
+                                 hàng của bạn đã được chúng tôi ghi nhận !
                               </p>
                            </div>
                         </div>
                      </div>
                   </div>
                   <div
-                     ref={printRef}
+                     ref={printRef} 
                      className='invoice__wrapper grey-bg-2 pt-40 pb-40 pl-40 pr-40 tp-invoice-print-wrapper'>
                      <div className='invoice__header-wrapper border-2 border-bottom border-white mb-40'>
                         <div className='row'>
@@ -105,18 +75,20 @@ const SingleOrder = ({ params }) => {
                         <div className='row'>
                            <div className='col-md-6 col-sm-8'>
                               <div className='invoice__customer-details'>
-                                 <h4 className='mb-10 text-uppercase'>Khách hàng: {order_new?.userId?.fullName}</h4>
-                                 <p className='mb-1 '>Địa chỉ nhận hàng: {order_new?.userId?.address?.address}, {province}, {district}, {ward}</p>
-                                 <p className='mb-1'>Số điện thoại: {order_new?.userId?.phone}</p>
+                                 <h4 className='mb-10 text-uppercase'>
+                                    Khách hàng: {order_new?.ma_khach_hang_belongto_khach_hang?.ten_khach_hang}
+                                 </h4>
+                                 <p className='mb-1 '>Địa chỉ nhận hàng: {order_new?.dia_chi_giao_hang}</p>
+                                 <p className='mb-1'>Số điện thoại: {order_new?.phone_giao_hang}</p>
                               </div>
                            </div>
                            <div className='col-md-6 col-sm-4'>
                               <div className='invoice__details mt-md-0 mt-20 text-md-end'>
                                  <p className='mb-0'>
-                                    <strong>ID - HÓA ĐƠN: </strong> {order_new?._id}
+                                    <strong>ID - HÓA ĐƠN: </strong> {order_new?.ma_hoa_don}
                                  </p>
                                  <p className='mb-0'>
-                                    <strong>NGÀY ĐẶT HÀNG:</strong> {dayjs(order_new?.createdAt).format("DDDD/MMMM/YYYY")}
+                                    <strong>NGÀY ĐẶT HÀNG:</strong> {dayjs(order_new?.ngay_lap).format("DD/MM/YYYY")}
                                  </p>
                               </div>
                            </div>
@@ -130,17 +102,34 @@ const SingleOrder = ({ params }) => {
                                  <th scope='col'>Tên sản phẩm</th>
                                  <th scope='col'>Số lượng</th>
                                  <th scope='col'>Giá bán</th>
+                                 <th scope='col'>Size & Màu sắc</th>
                                  <th scope='col'>Thành tiền</th>
                               </tr>
                            </thead>
                            <tbody className='table-group-divider'>
-                              {order_new?.items.map((item, i) => (
+                              {order_new?.hoa_don_hasMany_chi_tiet?.map((item, i) => (
                                  <tr key={i}>
                                     <td>{i + 1}</td>
-                                    <td>{item.productId?.name}</td>
-                                    <td>{item.quantity}</td>
-                                    <td>{formatCurrency(item.price)}</td>
-                                    <td>{formatCurrency(item.price * item.quantity)}</td>
+                                    <td>
+                                       {
+                                          item.ma_thuoc_tinh_belongto_thuoc_tinh?.thuoc_tinh_san_pham_belongsto_san_pham
+                                             ?.ten_san_pham
+                                       }
+                                    </td>
+                                    <td>{item?.so_luong}</td>
+                                    <td>{formatCurrency(item?.gia)}</td>
+                                    <td>
+                                       {
+                                          item.ma_thuoc_tinh_belongto_thuoc_tinh
+                                             ?.thuoc_tinh_san_pham_belongsto_kich_thuoc?.ten_kich_thuoc
+                                       }{" "}
+                                       và{" "}
+                                       {
+                                          item.ma_thuoc_tinh_belongto_thuoc_tinh?.thuoc_tinh_san_pham_belongsto_mau_sac
+                                             ?.ten_mau_sac
+                                       }
+                                    </td>
+                                    <td>{formatCurrency(item?.thanh_tien)}</td>
                                  </tr>
                               ))}
                            </tbody>
@@ -151,26 +140,28 @@ const SingleOrder = ({ params }) => {
                            <div className='col-lg-3 col-md-4'>
                               <div className='invoice__payment-method mb-30'>
                                  <h5 className='mb-0'>Phương thức thanh toán:</h5>
-                                 <p className='tp-font-medium text-uppercase'>{order_new?.paymentMethod.name}</p>
+                                 <p className='tp-font-medium text-uppercase'>
+                                    {order_new?.ma_phuong_thuc_belongto_phuong_thuc?.ten_phuong_thuc}
+                                 </p>
                               </div>
                            </div>
                            <div className='col-lg-3 col-md-4'>
                               <div className='invoice__shippint-cost mb-30'>
                                  <h5 className='mb-0'>Phí giao hàng (Nếu có):</h5>
-                                 <p className='tp-font-medium'>{formatCurrency(0)}</p>
+                                 <p className='tp-font-medium'>0</p>
                               </div>
                            </div>
                            <div className='col-lg-3 col-md-4'>
                               <div className='invoice__discount-cost mb-30'>
                                  <h5 className='mb-0'>Thành tiền giảm giá:</h5>
-                                 <p className='tp-font-medium'>{formatCurrency(order_new?.discountAmount)}</p>
+                                 <p className='tp-font-medium'>{formatCurrency(order_new?.tien_giam)}</p>
                               </div>
                            </div>
                            <div className='col-lg-3 col-md-4'>
                               <div className='invoice__total-ammount mb-30'>
                                  <h5 className='mb-0'>Tổng tiền:</h5>
                                  <p className='tp-font-medium text-danger'>
-                                    <strong>{formatCurrency(order_new?.totalPrice)}</strong>
+                                    <strong>{formatCurrency(order_new?.tong_gia_tri)}</strong>
                                  </p>
                               </div>
                            </div>
@@ -178,15 +169,15 @@ const SingleOrder = ({ params }) => {
                         <div className='invoice__total-ammount mb-30'>
                            <h5 className='mb-2'>Tổng tiền thành tiền thanh toán:</h5>
                            <h4 className='tp-font-medium text-danger'>
-                              <strong>{formatCurrency(order_new?.finalPrice)}</strong>
+                              <strong>{formatCurrency(order_new?.tong_gia_tri)}</strong>
                            </h4>
                         </div>
-                        <div class="invoice__total-ammount" style="margin-bottom: 30px;">
-                           <h5 style="margin-bottom: 0;">Chi chú cho đơn hàng:</h5>
-                           <p style="font-weight: 500;">
-                              <strong>{order_new?.note}</strong>
-                           </p>
-                        </div>
+<div className='invoice__total-ammount' style={{ marginBottom: '30px' }}>
+  <h5 style={{ marginBottom: 0 }}>Chi chú cho đơn hàng:</h5>
+  <p style={{ fontWeight: 500 }}>
+    <strong>{order_new?.dia_chi_giao_hang}</strong>
+  </p>
+</div>
                      </div>
                   </div>
                   <div className='invoice__print text-end mt-3'>
@@ -224,9 +215,9 @@ const SingleOrder = ({ params }) => {
    );
 };
 
-export const getServerSideProps = async ({ params }) => {
+export const getServerSideProps = async ({params}) => {
    return {
-      props: { params },
+      props: {params},
    };
 };
 

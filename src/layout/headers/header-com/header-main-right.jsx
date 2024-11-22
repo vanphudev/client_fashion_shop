@@ -9,7 +9,7 @@ import { openCartMini } from "@/redux/features/cartSlice";
 
 const HeaderMainRight = ({ setIsCanvasOpen }) => {
    const { user: userInfo } = useSelector((state) => state.auth);
-   const { quantity } = useCartInfo();
+   const {cart_products} = useSelector((state) => state.cart);
    const dispatch = useDispatch()
    return (
       <div className="tp-header-main-right d-flex align-items-center justify-content-end">
@@ -59,7 +59,7 @@ const HeaderMainRight = ({ setIsCanvasOpen }) => {
                   className="tp-header-action-btn cartmini-open-btn"
                >
                   <CartTwo />
-                  <span className="tp-header-action-badge">{quantity}</span>
+                  <span className="tp-header-action-badge">{cart_products.length}</span>
                </button>
             </div>
             <div className="tp-header-action-item d-lg-none">

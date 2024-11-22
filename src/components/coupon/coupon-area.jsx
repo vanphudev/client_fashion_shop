@@ -28,14 +28,14 @@ const CouponArea = () => {
       content = <ErrorMsg msg='There was an error' />;
    }
 
-   if (!isLoading && !isError && offerCoupons?.data?.vouchers?.length === 0) {
+   if (!isLoading && !isError && offerCoupons?.metadata?.khuyen_mais?.length === 0) {
       content = <ErrorMsg msg='No Coupons found!' />;
    }
 
-   if (!isLoading && !isError && offerCoupons?.data?.vouchers?.length > 0) {
-      const coupon_items = offerCoupons?.data?.vouchers;
+   if (!isLoading && !isError && offerCoupons?.metadata?.khuyen_mais?.length > 0) {
+      const coupon_items = offerCoupons?.metadata?.khuyen_mais;
       content = coupon_items.map((coupon) => (
-         <div key={coupon._id} className='col-xl-6'>
+         <div key={coupon.code} className='col-xl-6'>
             <CouponItem coupon={coupon} handleCopied={handleCopied} copied={copied} copiedCode={copiedCode} />
          </div>
       ));

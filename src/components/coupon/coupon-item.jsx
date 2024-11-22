@@ -24,10 +24,10 @@ const CouponItem = ({coupon, handleCopied, copiedCode, copied}) => {
             <div className='tp-coupon-content'>
                <h3 className='tp-coupon-title'>{coupon.code}</h3>
                <p className='tp-coupon-offer mb-15'>
-                  <span>{coupon.discountValue}%</span>Off
+                  <span>{coupon.gia_tri}%</span> {" "}Off
                </p>
                <div className='tp-coupon-countdown'>
-                  {dayjs().isAfter(dayjs(coupon.endDate)) ? (
+                  {dayjs().isAfter(dayjs(coupon.thoi_gian_ket_thuc)) ? (
                      <div className='tp-coupon-countdown-inner'>
                         <ul>
                            <li>
@@ -45,7 +45,7 @@ const CouponItem = ({coupon, handleCopied, copiedCode, copied}) => {
                         </ul>
                      </div>
                   ) : (
-                     <OfferTimer expiryTimestamp={new Date(coupon.endDate)} />
+                     <OfferTimer expiryTimestamp={new Date(coupon.thoi_gian_ket_thuc)} />
                   )}
                </div>
             </div>
@@ -54,8 +54,8 @@ const CouponItem = ({coupon, handleCopied, copiedCode, copied}) => {
             <div className='tp-coupon-status mb-10 d-flex align-items-center'>
                <h4>
                   Coupon{" "}
-                  <span className={dayjs().isAfter(dayjs(coupon.endDate)) ? "in-active" : "active"}>
-                     {dayjs().isAfter(dayjs(coupon.endDate)) ? "Inactive" : "Active"}
+                  <span className={dayjs().isAfter(dayjs(coupon.thoi_gian_ket_thuc)) ? "in-active" : "active"}>
+                     {dayjs().isAfter(dayjs(coupon.thoi_gian_ket_thuc)) ? "Inactive" : "Active"}
                   </span>
                </h4>
                <div className='tp-coupon-info-details'>
@@ -65,7 +65,7 @@ const CouponItem = ({coupon, handleCopied, copiedCode, copied}) => {
                   <div className='tp-coupon-info-tooltip transition-3'>
                      <p>
                         *This coupon code will apply on <span>Grocery type products</span> and when you shopping more
-                        than <span>{formatCurrency(coupon.minOrderValue)}</span>
+                        than <span>{formatCurrency(coupon.gia_tri_hoa_don_toi_thieu)}</span>
                      </p>
                   </div>
                </div>

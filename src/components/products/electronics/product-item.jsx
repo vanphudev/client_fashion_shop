@@ -31,15 +31,14 @@ const ProductItem = ({product, offer_style = false}) => {
       thuoc_tinh_san_pham,
       created_at,
    } = product || {};
-   console.log("product", product);
-
    const router = useRouter();
    const [addToCart, {}] = useAddToCartMutation();
    const {cart_products} = useSelector((state) => state.cart);
    const {data: cartData, refetch} = useGetCartByUserQuery();
-   console.log("cartData", cartData);
 
-   const isAddedToCart = Array.isArray(cart_products) && cart_products.some((prd) => prd?.productId._id === _id);
+   const isAddedToCart =
+      Array.isArray(cart_products) &&
+      cart_products.some((prd) => prd?.thuoc_tinh_san_pham?.san_pham?.ma_san_pham === product?.ma_san_pham);
    const dispatch = useDispatch();
    const [ratingVal, setRatingVal] = useState(0);
 
@@ -53,42 +52,13 @@ const ProductItem = ({product, offer_style = false}) => {
       }
    }, [danh_gia_san_pham]);
 
-   // handle add product
-   const handleAddProduct = (prd) => {
-      addProductToCart(prd);
-   };
-
-   const addProductToCart = async (product) => {
-      try {
-         const isAuthenticate = Cookies.get("userInfo");
-         if (!isAuthenticate) {
-            router.push("/login");
-            notifyError("Bạn chưa đăng nhập !");
-            return;
-         }
-
-         const data = await addToCart({
-            productId: product._id,
-            quantity: 1,
-         });
-
-         if (data?.error) {
-            notifyError("Thêm sản phẩm thất bại !");
-            return;
-         }
-
-         if (data.data.status === 200) {
-            refetch();
-            notifySuccess("Thêm sản phẩm vào giỏ thành công !");
-         }
-      } catch (error) {
-         notifyError("Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.", error);
-      }
+   const handleAddProduct = () => {
+      router.push(`/product-details/${slug}`);
    };
 
    useEffect(() => {
       if (cartData) {
-         const cart_products = cartData?.data?.cart?.items || [];
+         const cart_products = cartData?.metadata?.gio_hang || [];
          dispatch(load_cart_products(cart_products));
       }
    }, [cartData, dispatch]);
@@ -124,7 +94,7 @@ const ProductItem = ({product, offer_style = false}) => {
                            </Link>
                         ) : (
                            <button
-                              onClick={() => handleAddProduct(product)}
+                              onClick={() => handleAddProduct()}
                               type='button'
                               className={`tp-product-action-btn ${
                                  isAddedToCart ? "active" : ""

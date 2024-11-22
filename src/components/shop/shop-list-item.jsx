@@ -3,6 +3,7 @@ import {useDispatch} from "react-redux";
 import Image from "next/image";
 import {Rating} from "react-simple-star-rating";
 import Link from "next/link";
+import {useRouter} from "next/router";
 // internal
 import {Cart, QuickView} from "@/svg";
 import {handleProductModal} from "@/redux/features/productModalSlice";
@@ -28,7 +29,7 @@ const ShopListItem = ({product}) => {
    } = product || {};
    const dispatch = useDispatch();
    const [ratingVal, setRatingVal] = useState(0);
-
+   const router = useRouter();
    useEffect(() => {
       if (danh_gia_san_pham && danh_gia_san_pham.length > 0) {
          const rating = danh_gia_san_pham.reduce((acc, review) => acc + review.diem_danh_gia, 0) / danh_gia_san_pham.length;
@@ -40,7 +41,7 @@ const ShopListItem = ({product}) => {
 
    // handle add product
    const handleAddProduct = (prd) => {
-      dispatch(add_cart_product(prd));
+      router.push(`/product-details/${slug}`);
    };
 
    return (

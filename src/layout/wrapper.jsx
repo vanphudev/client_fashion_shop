@@ -12,14 +12,14 @@ import useAuthCheck from "@/hooks/use-auth-check";
 import Loader from "@/components/loader/loader";
 import { useGetCartByUserQuery } from '@/redux/features/cartSlice';
 
-
 const Wrapper = ({ children }) => {
    const { productItem } = useSelector((state) => state.productModal);
    const dispatch = useDispatch();
    const authChecked = useAuthCheck();
+
    const { data: cartData} = useGetCartByUserQuery();
    useEffect(() => {
-      const cart_products = cartData?.data?.cart?.items || [];
+      const cart_products = cartData?.metadata?.gio_hang || [];
       dispatch(load_cart_products(cart_products));
    }, [cartData, dispatch]);
 

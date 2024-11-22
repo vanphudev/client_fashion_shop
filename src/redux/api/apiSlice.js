@@ -65,7 +65,6 @@ const customBaseQuery = fetchBaseQuery({
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
    let result = await customBaseQuery(args, api, extraOptions);
-   console.log("result", result);
    if (result.error && result.error.status === 419) {
       console.log("Token expired, attempting to refresh...");
       const newTokens = await refreshAccessToken();

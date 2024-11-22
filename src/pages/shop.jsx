@@ -103,18 +103,14 @@ const ShopPage = ({query}) => {
             (p) => p.loai_san_pham?.slug?.toLowerCase().replace("&", "").split(" ").join("-") == query.category
          );
       }
-
       if (query.group_category) {
          product_items = product_items.filter(
             (p) => p.nhom_loai?.slug?.toLowerCase().replace("&", "").split(" ").join("-") == query.group_category
          );
       }
-
-      // brand filter
       if (query.brand) {
          product_items = product_items.filter((p) => p.thuong_hieu?.ma_thuong_hieu === query.brand);
       }
-
       content = (
          <>
             <ShopArea all_products={products?.metadata?.san_phams} products={product_items} otherProps={otherProps} />
@@ -137,7 +133,6 @@ export default ShopPage;
 
 export const getServerSideProps = async (context) => {
    const {query} = context;
-
    return {
       props: {
          query,

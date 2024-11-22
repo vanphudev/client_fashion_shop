@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import Image from "next/image";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import useCartInfo from "@/hooks/use-cart-info";
 import RenderCartProgress from "./render-cart-progress";
 import empty_cart_img from "@assets/img/product/cartmini/empty-cart.png";
-import { closeCartMini, load_cart_products } from "@/redux/features/cartSlice";
-import { useRemoveFromCartMutation, useGetCartByUserQuery } from "@/redux/features/cartSlice";
+import {closeCartMini, load_cart_products} from "@/redux/features/cartSlice";
+import {useRemoveFromCartMutation} from "@/redux/features/cartSlice";
+import {useGetCartByUserQuery} from "@/redux/features/cartSlice";
 import formatCurrency from "@/lib/funcMoney";
-import { notifySuccess, notifyError } from "@/utils/toast";
-import { useRouter } from 'next/router';
+import {notifySuccess, notifyError} from "@/utils/toast";
+import {useRouter} from "next/router";
 
 const CartMiniSidebar = () => {
-   const { cart_products, cartMiniOpen } = useSelector((state) => state.cart);
-   const [removeToCart, { }] = useRemoveFromCartMutation();
-   const { data: cartData, refetch } = useGetCartByUserQuery();
-   const { total } = useCartInfo();
+   const {cart_products, cartMiniOpen} = useSelector((state) => state.cart);
+   const [removeToCart, {}] = useRemoveFromCartMutation();
+   const {data: cartData, refetch} = useGetCartByUserQuery();
+   const {total} = useCartInfo();
    const dispatch = useDispatch();
 
    const router = useRouter();
+
    const handleRemovePrd = (prd) => {
       removeProductCartById(prd);
    };
@@ -28,20 +30,17 @@ const CartMiniSidebar = () => {
       try {
          const isAuthenticate = Cookies.get("userInfo");
          if (!isAuthenticate) {
-            router.push("/login")
+            router.push("/login");
             notifyError("Bạn chưa đăng nhập !");
             return;
-         };
-
+         }
          const data = await removeToCart({
-            productId: product._id,
+            ma_thuoc_tinh: product.ma_thuoc_tinh,
          });
-
          if (data?.error) {
-            notifyError(data.error.data.message);
+            notifyError("Đã có lỗi khi cập nhật - Load lại trang !");
             return;
-          }
-  
+         }
          if (data.data.status === 200) {
             refetch();
             notifySuccess("Xóa sản phẩm khỏi giỏ hàng thành công !");
@@ -49,12 +48,12 @@ const CartMiniSidebar = () => {
       } catch (error) {
          notifyError("Đã xảy ra lỗi khi xóa sản phẩm ra khỏi giỏ hàng." + error);
       }
-   }
+   };
 
    useEffect(() => {
       if (cartData) {
-         const cart_products = cartData?.data?.cart?.items || [];
-         dispatch(load_cart_products(cart_products)); 
+         const cart_products = cartData?.metadata?.gio_hang || [];
+         dispatch(load_cart_products(cart_products));
       }
    }, [cartData, dispatch]);
 
@@ -84,39 +83,46 @@ const CartMiniSidebar = () => {
                   </div>
                   {cart_products?.length > 0 && (
                      <div className='cartmini__widget'>
-                        {cart_products?.map((item) => (
-                           <div key={item._id} className='cartmini__widget-item'>
+                        {cart_products?.map((item, i) => (
+                           <div key={i} className='cartmini__widget-item'>
                               <div className='cartmini__thumb'>
-                                 <Link href={`/product-details/${item?.productId.productUrl}`}>
-                                    <Image src={item?.productId.images[0]} width={70} height={60} alt='product img' />
+                                 <Link href={`/product-details/${item?.thuoc_tinh_san_pham?.san_pham?.slug}`}>
+                                    <Image
+                                       src={item?.thuoc_tinh_san_pham?.san_pham?.thumbnail_image}
+                                       width={70}
+                                       height={60}
+                                       alt='product img'
+                                    />
                                  </Link>
                               </div>
                               <div className='cartmini__content'>
                                  <h5 className='cartmini__title'>
-                                    <Link href={`/product-details/${item?.productId.productUrl}`}>
-                                       {item?.productId.name}
+                                    <Link href={`/product-details/${item?.thuoc_tinh_san_pham?.san_pham?.slug}`}>
+                                       {item?.thuoc_tinh_san_pham?.san_pham?.ten_san_pham}
                                     </Link>
                                  </h5>
                                  <div className='cartmini__price-wrapper'>
-                                    {item?.productId.discount > 0 ? (
+                                    {item?.thuoc_tinh_san_pham?.san_pham?.giam_gia > 0 ? (
                                        <span className='cartmini__price'>
                                           {formatCurrency(
                                              (
-                                                Number(item?.productId.price) -
-                                                (Number(item?.productId.price) * Number(item?.productId.discount)) / 100
+                                                Number(item?.thuoc_tinh_san_pham?.gia_ban) -
+                                                (Number(item?.thuoc_tinh_san_pham?.gia_ban) *
+                                                   Number(item?.thuoc_tinh_san_pham?.san_pham?.giam_gia)) /
+                                                   100
                                              ).toFixed(3)
                                           )}
                                        </span>
                                     ) : (
                                        <span className='cartmini__price'>
-                                          {formatCurrency(Number(item?.productId.price.toFixed(2)))}
+                                          {formatCurrency(Number(item?.thuoc_tinh_san_pham?.gia_ban))}
                                        </span>
                                     )}
-                                    <span className='cartmini__quantity'> x{item.quantity}</span>
+                                    <span className='cartmini__quantity'> x{item.so_luong}</span>
                                  </div>
                               </div>
                               <a
-                                 onClick={() => handleRemovePrd(item?.productId)}
+                                 onClick={() => handleRemovePrd(item?.thuoc_tinh_san_pham)}
                                  className='cartmini__del cursor-pointer'>
                                  <i className='fa-regular fa-xmark'></i>
                               </a>

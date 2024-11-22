@@ -25,6 +25,18 @@ const notifyError = (message) =>
       toastId: "id_notification-error"
    });
 
+   const notifyWarning = (message) =>
+      toast.warning(message, {
+         position: "top-center",
+         autoClose: 2000,
+         hideProgressBar: false,
+         closeOnClick: true,
+         pauseOnHover: true,
+         draggable: true,
+         progress: undefined,
+         toastId: "id_notification-error"
+      });
+
 <ToastContainer
    position='top-center'
    autoClose={2000}
@@ -37,4 +49,4 @@ const notifyError = (message) =>
    pauseOnHover
 />;
 
-export { ToastContainer, notifySuccess, notifyError };
+export { ToastContainer, notifySuccess, notifyError, notifyWarning };

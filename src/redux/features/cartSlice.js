@@ -55,10 +55,10 @@ export const cartApi = apiSlice.injectEndpoints({
          }),
       }),
       addToCart: builder.mutation({
-         query: ({productId, quantity}) => ({
-            url: "http://localhost:5555/api/v1/carts/additem",
+         query: ({so_luong, ma_thuoc_tinh, is_Decrease}) => ({
+            url: "http://localhost:4040/api/v1/private/cart/addProductToCart",
             method: "POST",
-            body: {productId, quantity},
+            body: {so_luong, ma_thuoc_tinh, is_Decrease},
          }),
       }),
       increaseProductQuantity: builder.mutation({
@@ -70,21 +70,21 @@ export const cartApi = apiSlice.injectEndpoints({
       }),
       decreaseProductQuantity: builder.mutation({
          query: ({productId}) => ({
-            url: "http://localhost:5555/api/v1/carts/decreasequantity",
-            method: "PUT",
-            body: {productId},
+            url: "http://localhost:4040/api/v1/private/cart/addProductToCart",
+            method: "POST",
+            body: {so_luong, ma_thuoc_tinh, is_Decrease},
          }),
       }),
       removeFromCart: builder.mutation({
-         query: ({clientId, productId}) => ({
-            url: "http://localhost:5555/api/v1/carts/removeitem",
+         query: ({ ma_thuoc_tinh}) => ({
+            url: "http://localhost:4040/api/v1/private/cart/deleteProductFromCart",
             method: "DELETE",
-            body: {productId},
+            body: {ma_thuoc_tinh},
          }),
       }),
       clearCart: builder.mutation({
          query: () => ({
-            url: "http://localhost:5555/api/v1/carts/clear",
+            url: "http://localhost:4040/api/v1/private/cart/deleteCart",
             method: "DELETE",
          }),
       }),

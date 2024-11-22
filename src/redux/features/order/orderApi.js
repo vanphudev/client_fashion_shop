@@ -1,28 +1,15 @@
-import { apiSlice } from "../../api/apiSlice";
-import { set_client_secret } from "./orderSlice";
+import {apiSlice} from "../../api/apiSlice";
+import {set_client_secret} from "./orderSlice";
 
 export const authApi = apiSlice.injectEndpoints({
    overrideExisting: true,
    endpoints: (builder) => ({
-      // saveOrder
       saveOrder: builder.mutation({
          query: (data) => ({
-            url: "http://localhost:5555/api/v1/orders/create",
+            url: "http://localhost:4040/api/v1/private/order/order",
             method: "POST",
             body: data,
          }),
-         async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-            try {
-               const result = await queryFulfilled;
-               if (result) {
-                  localStorage.removeItem("couponInfo");
-                  localStorage.removeItem("cart_products");
-                  localStorage.removeItem("shipping_info");
-               }
-            } catch (err) {
-
-            }
-         },
       }),
 
       // getUserOrders
@@ -34,7 +21,7 @@ export const authApi = apiSlice.injectEndpoints({
 
       // getUserOrders
       getUserOrderById: builder.query({
-         query: (id) => `http://localhost:5555/api/v1/orders/getbyid?id=${id}`,
+         query: (id) => `http://localhost:4040/api/v1/public/hoa_don/getOrders/${id}`,
       }),
 
       // Call api tỉnh thành
@@ -47,21 +34,27 @@ export const authApi = apiSlice.injectEndpoints({
          query: (id) => `https://vapi.vnappmob.com/api/province/district/${id}`,
       }),
 
-
       getApiWard: builder.query({
          query: (id) => ` https://vapi.vnappmob.com/api/province/ward/${id}`,
       }),
 
       checkProductBought: builder.mutation({
          query: (data) => ({
-            url: "http://localhost:5555/api/v1/orders/checkproduct",
+            url: "http://localhost:4040/api/v1/private/review/checkBuyProduct",
             method: "POST",
             body: data,
          }),
       }),
-
    }),
 });
 
-export const { useCreatePaymentIntentMutation, useSaveOrderMutation, useGetUserOrderByIdQuery, useGetUserOrdersQuery, useGetApiProvinceQuery, useGetApiDistrictQuery, useGetApiWardQuery, useCheckProductBoughtMutation } =
-   authApi;
+export const {
+   useCreatePaymentIntentMutation,
+   useSaveOrderMutation,
+   useGetUserOrderByIdQuery,
+   useGetUserOrdersQuery,
+   useGetApiProvinceQuery,
+   useGetApiDistrictQuery,
+   useGetApiWardQuery,
+   useCheckProductBoughtMutation,
+} = authApi;

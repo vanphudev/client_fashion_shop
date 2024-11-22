@@ -8,8 +8,8 @@ const useCartInfo = () => {
 
    useEffect(() => {
       const cart = cart_products.reduce((cartTotal, cartItem) => {
-         const { quantity, productId } = cartItem;
-         const itemTotal = productId.price * quantity;
+         const { so_luong, thuoc_tinh_san_pham } = cartItem;
+         const itemTotal = thuoc_tinh_san_pham?.gia_ban * so_luong;
          cartTotal.total += itemTotal
          cartTotal.quantity += quantity
          return cartTotal;
